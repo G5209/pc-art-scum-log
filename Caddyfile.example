@@ -1,0 +1,7 @@
+logs.example.com {
+ encode zstd gzip
+ reverse_proxy 127.0.0.1:8080 {
+  flush_interval -1
+  header_up X-Forwarded-Proto {scheme}
+ }
+}

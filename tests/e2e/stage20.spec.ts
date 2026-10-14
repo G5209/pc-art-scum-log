@@ -1,0 +1,22 @@
+import {test,expect} from '@playwright/test';
+test('撬锁品质、归属及中文目标独立展示，筛选保存网址并过滤全部记录',async({page})=>{
+ const errors:string[]=[];
+ await page.goto('/login');await page.getByLabel('账号',{exact:true}).fill('admin');await page.getByLabel('密码',{exact:true}).fill('browser-test-only-password');await page.getByRole('button',{name:'登录',exact:true}).click();await expect(page).not.toHaveURL(/\/login$/);
+ if(new URL(page.url()).pathname==='/welcome')await page.getByRole('button',{name:'稍后配置',exact:true}).click();
+ page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+ await page.goto('/logs/lockpick?q='+encodeURIComponent('阶段二十撬锁测试')+'&pageSize=10');await expect(page.locator('.lockpick-card')).toHaveCount(5);
+ const field=(card:any,name:string)=>card.locator('.structured-fields > div').filter({has:page.locator('dt').filter({hasText:new RegExp('^'+name+'$')})}).locator('dd');
+ const basic=page.locator('.lockpick-card').filter({hasText:'阶段二十撬锁测试0'});await expect(field(basic,'锁品质')).toHaveText('铁锁');await expect(field(basic,'锁难度')).toHaveText('基础');await expect(field(basic,'锁归属')).toHaveText('系统锁');await expect(field(basic,'失败次数')).toHaveText('0');await expect(field(basic,'耗时')).toHaveText('0 秒');await expect(field(basic,'目标物品').locator('span')).toHaveAttribute('title','BPLockpick_Weapon_Locker_Military_C');await expect(field(basic,'目标物品')).toHaveText('军用武器柜');
+ const medium=page.locator('.lockpick-card').filter({hasText:'阶段二十撬锁测试1'});await expect(field(medium,'锁品质')).toHaveText('银锁');await expect(field(medium,'锁难度')).toHaveText('普通');await expect(field(medium,'锁归属')).toHaveText('世界对象');await expect(field(medium,'目标物品')).toHaveText('BP_Full_Set_02_Door_01_C');
+ const gold=page.locator('.lockpick-card').filter({hasText:'阶段二十撬锁测试2'});await expect(field(gold,'锁品质')).toHaveText('金锁');await expect(field(gold,'锁归属')).toContainText('玩家锁');await expect(field(gold,'锁归属')).toContainText('测试物主');
+ const silver=page.locator('.lockpick-card').filter({hasText:'阶段二十撬锁测试3'});await expect(field(silver,'锁品质')).toHaveText('银锁');await expect(field(silver,'锁归属')).toHaveText('世界锁');
+ const iron=page.locator('.lockpick-card').filter({hasText:'阶段二十撬锁测试4'});await expect(field(iron,'锁归属')).toHaveText('—');await expect(field(iron,'目标物品')).toHaveText('UnverifiedObject_C');
+ await basic.locator('[data-event]').click();await expect(page.locator('#drawer details')).not.toHaveAttribute('open');await page.locator('#drawer summary').click();await expect(page.locator('#drawer pre')).toContainText('Lock type: Basic');await page.getByRole('button',{name:'关闭详情',exact:true}).click();
+ const quality=page.locator('[data-multi-name="lock_quality"]');await quality.locator('[data-multi-toggle]').click();await quality.locator('[data-multi-option][value="Gold"]').check();await expect(page.locator('.lockpick-card')).toHaveCount(1);await expect(quality.locator('[data-multi-toggle]')).toContainText('已选 1 个');await expect(page).toHaveURL(/lock_quality=Gold/);
+ const owner=page.locator('[data-multi-name="owner_status"]');await owner.locator('[data-multi-toggle]').click();await owner.locator('[data-multi-option][value="player"]').check();await expect(page.locator('.lockpick-card')).toHaveCount(1);await page.getByRole('heading',{name:'撬锁日志',exact:true}).first().click();await expect(owner).not.toHaveClass(/open/);
+ await page.reload();await expect(page.locator('.lockpick-card')).toHaveCount(1);await expect(quality.locator('[data-multi-toggle]')).toContainText('已选 1 个');await expect(owner.locator('[data-multi-toggle]')).toContainText('已选 1 个');
+ await page.screenshot({path:`test-results/stage20-filtered-${test.info().project.name}.png`,fullPage:true});
+ await page.locator('#clear-filter').click();await expect(page).not.toHaveURL(/lock_quality=Gold|owner_status=player/);await expect(page.locator('.lockpick-card')).toHaveCount(10);await expect(quality.locator('[data-multi-toggle]')).toContainText('全部');await expect(owner.locator('[data-multi-toggle]')).toContainText('全部');
+ await page.goto('/logs/lockpick?q='+encodeURIComponent('阶段二十撬锁测试'));await expect(page.locator('.lockpick-card')).toHaveCount(5);expect(await page.title()).toBe('PC艺术网页日志');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(errors).toEqual([]);
+ await page.screenshot({path:`test-results/stage20-lockpick-${test.info().project.name}.png`,fullPage:true});
+});

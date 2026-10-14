@@ -1,0 +1,14 @@
+import {SourceStore,importLegacy} from './lib/datasource';
+import 'dotenv/config';
+import {createApp} from './app';
+import {db,dbPath} from './db';
+import path from 'node:path';
+import {perfLog} from './performance';
+const port=Number(process.env.PORT??3000);
+process.on('uncaughtException',error=>{perfLog('process-error.log',{type:'uncaughtException',error:String(error),stack:error instanceof Error?error.stack:undefined});console.error('未捕获异常，已记录并继续提供服务。',error);});
+process.on('unhandledRejection',reason=>{perfLog('process-error.log',{type:'unhandledRejection',error:String(reason)});console.error('未处理的异步异常，已记录。',reason);});
+const app=createApp(db,{dbPath,rawDir:path.resolve(process.env.RAW_DIR??'data/raw/events'),bootstrapLog:process.env.NODE_ENV!=='production',onlinePolling:true});
+void importLegacy(new SourceStore(db)).catch(()=>console.warn('旧配置导入失败，请在设置页配置日志源。')).then(()=>{if(process.env.INGEST_TAIL_ENABLED!=='false')app.locals.online.start();});
+const server=app.listen(port,process.env.HOST??'127.0.0.1',()=>console.log('SCUM API listening on '+port));
+async function stop(){await app.locals.online.stop();app.locals.close();server.close(()=>{db.close();process.exit(0);});}process.on('SIGINT',stop);process.on('SIGTERM',stop);
+export default app;

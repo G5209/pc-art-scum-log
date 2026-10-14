@@ -1,0 +1,10 @@
+{
+  "name": "@scum/web",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "node server.cjs",
+    "build": "node ../../scripts/check-web.cjs",
+    "serve": "node server.cjs"
+  }
+}

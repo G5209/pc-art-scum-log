@@ -1,0 +1,1 @@
+module.exports={apps:[{name:'scum-api',script:'apps/api/dist/server.js',cwd:__dirname,env:{NODE_ENV:'production',PORT:3000,HOST:'127.0.0.1'}},{name:'scum-web',script:'apps/web/server.cjs',cwd:__dirname,env:{NODE_ENV:'production',PORT:8080,HOST:'127.0.0.1'}}]};

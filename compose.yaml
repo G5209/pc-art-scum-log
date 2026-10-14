@@ -1,0 +1,31 @@
+services:
+  api:
+    build: .
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 3000
+      DB_PATH: data/db/scum.db
+      RAW_DIR: data/raw/events
+      PYTHON: python3
+      INGEST_TAIL_ENABLED: ${INGEST_TAIL_ENABLED:-true}
+      INGEST_TAIL_INTERVAL_MS: ${INGEST_TAIL_INTERVAL_MS:-2000}
+      ONLINE_TIMEOUT_SEC: ${ONLINE_TIMEOUT_SEC:-300}
+      WEB_ORIGIN: ${WEB_ORIGIN:-http://localhost:8080}
+      CORS_ORIGINS: ${WEB_ORIGIN:-http://localhost:8080}
+      TRUST_PROXY: loopback,linklocal,uniquelocal
+      METRICS_TOKEN: ${METRICS_TOKEN:-}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    expose: ["3000"]
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    restart: unless-stopped
+    ports: ["127.0.0.1:8080:80"]
+    depends_on:
+      api:
+        condition: service_healthy

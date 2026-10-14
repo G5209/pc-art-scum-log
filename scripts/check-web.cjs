@@ -1,0 +1,6 @@
+// Browser dictionaries are generated from the shared parser contract.
+const lockpick=require('../packages/shared/dist/lockpick-translations');
+require('node:fs').writeFileSync(require('node:path').join(__dirname,'../apps/web/public/lockpick-dictionary.js'),'/* 自动生成：修改 packages/shared/src/lockpick-translations.ts */\nwindow.lockpickDictionary='+JSON.stringify({mapping:lockpick.LOCK_TYPE_MAPPING,qualities:lockpick.LOCK_QUALITIES,difficulties:lockpick.LOCK_DIFFICULTIES,targets:lockpick.LOCKPICK_TARGETS})+';\n');
+const fs=require('node:fs'),path=require('node:path');const required=['index.html','app.js','ui.js','datasource.js','styles.css','vendor/echarts.min.js'];for(const file of required)if(!fs.existsSync(path.join(__dirname,'../apps/web/public',file)))throw new Error(`缺少前端文件: ${file}`);const js=fs.readFileSync(path.join(__dirname,'../apps/web/public/app.js'),'utf8');if(/from ['"]vue|vue-router|pinia|vite/i.test(js))throw new Error('静态前端不应依赖 Vue/Vite/Pinia');console.log(`静态前端检查通过（${js.length} 字节）`);
+
+for(const file of ['app.js','ui.js','datasource.js']){const result=require('node:child_process').spawnSync(process.execPath,['--check',path.join(__dirname,'../apps/web/public',file)],{encoding:'utf8'});if(result.status!==0)throw new Error(result.stderr);}

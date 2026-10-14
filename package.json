@@ -1,0 +1,40 @@
+{
+  "name": "pc-art-scum-log",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "tsc -b packages/shared packages/parser apps/api && npm --workspace apps/web run build",
+    "test": "vitest run",
+    "ingest": "tsx packages/parser/src/cli.ts",
+    "dev:api": "tsx apps/api/src/server.ts",
+    "dev:web": "npm --workspace apps/web run dev",
+    "start:api": "node apps/api/dist/server.js",
+    "dev": "node scripts/dev.cjs",
+    "test:e2e": "playwright test",
+    "migrate": "tsx scripts/migrate.ts",
+    "migrate:status": "tsx scripts/migrate.ts status",
+    "probe": "tsx scripts/latency-probe.ts",
+    "collect:samples": "tsx scripts/sample-collector.ts",
+    "migrate:datasource": "tsx scripts/migrate-datasource.ts"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "@types/supertest": "^7.2.1",
+    "supertest": "^7.3.1",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.8"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.7"
+  },
+  "description": "PC艺术网页日志：只读日志采集、玩家记录与可视化查询"
+}

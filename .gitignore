@@ -1,0 +1,55 @@
+# 数据
+data/db/*
+!data/db/.gitkeep
+data/raw/*
+!data/raw/.gitkeep
+data/backups/
+data/diagnostics/
+data/fixtures/
+data/runtime/
+data/*.json
+data/.datakey
+
+# 配置
+.env
+.env.*
+!.env.example
+scripts/sftp_config.py
+scripts/sftp.config.json
+scripts/known_hosts
+
+# 日志
+logs/*
+!logs/.gitkeep
+*.log
+
+# 依赖与构建
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+__pycache__/
+*.pyc
+
+# 测试产物
+test-results/
+playwright-report/
+coverage/
+
+# 文档
+docs/
+*.md
+**/*.md
+!/README.md
+
+# 密钥
+**/*.pem
+**/*.key
+**/*.ppk
+
+# 系统
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp

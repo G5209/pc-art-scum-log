@@ -1,0 +1,14 @@
+[Unit]
+Description=SCUM log API
+After=network.target
+[Service]
+WorkingDirectory=/opt/scum-logs
+EnvironmentFile=/opt/scum-logs/.env
+ExecStart=/usr/bin/node /opt/scum-logs/apps/api/dist/server.js
+Restart=on-failure
+User=scum
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/opt/scum-logs/data /opt/scum-logs/logs
+[Install]
+WantedBy=multi-user.target

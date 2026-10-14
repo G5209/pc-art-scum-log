@@ -1,0 +1,11 @@
+[Unit]
+Description=SCUM log web
+After=network.target
+[Service]
+WorkingDirectory=/opt/scum-logs
+ExecStart=/usr/bin/node /opt/scum-logs/apps/web/server.cjs
+Restart=on-failure
+User=scum
+NoNewPrivileges=true
+[Install]
+WantedBy=multi-user.target
